@@ -12,7 +12,7 @@ const firebaseConfig = {
   appId: Config.FIREBASE_APP_ID,
 };
 
-// Inicializar Firebase
+// Inicializar Firebase 
 const app = initializeApp(firebaseConfig);
 
 // Servicios de Firebase
