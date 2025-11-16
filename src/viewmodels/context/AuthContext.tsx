@@ -1,10 +1,10 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react'; //useState para el estado, useEffect para efectos secundarios
 import { onAuthStateChanged } from 'firebase/auth'; //Observador de Firebase que detecta cambios en el estado de autenticación
-import { auth } from '../../../services/firebase/config';
-import authService from '../../../services/firebase/authService';
-import userService from '../../../services/userService';
-import { User } from '../../../models/User';
-import { PRESUPUESTO_DEFAULT } from '../../../utils/constants';
+import { auth } from '../../services/firebase/config';
+import authService from '../../services/firebase/authService';
+import userService from '../../services/userService';
+import { User } from '../../models/User';
+import { PRESUPUESTO_DEFAULT } from '../../utils/constants';
 
 interface AuthContextData {
   user: User | null;    //Usuario actual o null si no está autenticado

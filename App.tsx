@@ -3,7 +3,7 @@ import React from 'react';
 import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AuthProvider } from './src/viewmodels/hooks/context/AuthContext';
+import { AuthProvider } from './src/viewmodels/context/AuthContext';
 import AuthNavigator from './src/navigation/AuthNavigator';
 
 /**
