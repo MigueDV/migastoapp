@@ -18,6 +18,8 @@ export type MainTabParamList = {
 };
 
 export type ExpenseStackParamList = {
+  AddExpense: undefined;// Agrege esto
   ExpenseDetail: { expenseId: string };
   EditExpense: { expense: Expense };
 };
+
