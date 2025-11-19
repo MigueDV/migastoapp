@@ -1,33 +1,37 @@
-
-
-// App.tsx
 import React from 'react';
-import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthProvider } from './src/viewmodels/context/AuthContext';
-import AuthNavigator from './src/navigation/AuthNavigator';
+import { ExpenseProvider } from './src/viewmodels/context/ExpenseContext';
+import HomeScreen from './src/screens/home/HomeScreen';
+import ExpenseListScreen from './src/screens/expenses/ExpenseListScreen';
 
-/**
- * Componente principal de la aplicación
- * Versión temporal para probar autenticación
- */
+const Tab = createBottomTabNavigator();
 
-
-function App(): React.JSX.Element {
+function App() {
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <AuthProvider>
-          <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-          <AuthNavigator />
-        </AuthProvider>
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <NavigationContainer>
+      <AuthProvider>
+        <ExpenseProvider>
+          <Tab.Navigator>
+            <Tab.Screen 
+              name="Home" 
+              component={HomeScreen}
+              options={{ title: 'Inicio' }}
+            />
+            <Tab.Screen 
+              name="ExpenseList" 
+              component={ExpenseListScreen}
+              options={{ title: 'Gastos' }}
+            />
+          </Tab.Navigator>
+        </ExpenseProvider>
+      </AuthProvider>
+    </NavigationContainer>
   );
 }
 
-export default App; 
+export default App;
 
 /* Prueba del funcionamiento del crud
 

@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { ExpenseContext } from '../context/ExpenseContext';
+import { ExpenseContext } from '../../viewmodels/context/ExpenseContext';
 
 /**
  * Hook para acceder al contexto de gastos

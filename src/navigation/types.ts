@@ -14,12 +14,13 @@ export type MainTabParamList = {
   Home: undefined;
   AddExpense: undefined;
   ExpenseList: undefined;
-  Profile: undefined;
+  Profile: undefined;  
+  ExpenseDetail: { expenseId: string };
+  EditExpense: { expense: Expense };
 };
 
 export type ExpenseStackParamList = {
-  AddExpense: undefined;// Agrege esto
-  ExpenseDetail: { expenseId: string };
-  EditExpense: { expense: Expense };
+  
+  
 };
 
