@@ -47,12 +47,19 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
   const [filtroFechaSeleccionado, setFiltroFechaSeleccionado] = useState('todos');
 
   useEffect(() => {
-    if (user) {
-      cargarGastos();
-    } else {
+    if (!user) {
       setGastos([]);
       setGastosFiltrados([]);
+      return;
     }
+  
+    const unsubscribe = expensesService.escucharGastosUsuario(user.uid, (nuevosGastos) => {
+      setGastos(nuevosGastos);
+      setError(null);
+      setCargando(false);
+    });
+  
+    return () => unsubscribe();
   }, [user]);
 
   useEffect(() => {

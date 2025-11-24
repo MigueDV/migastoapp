@@ -37,7 +37,17 @@ const ExpenseDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const [gasto, setGasto] = useState<any>(null);
 
   React.useEffect(() => {
-    cargarGasto();
+    const unsubscribe = expenseService.escucharGastoPorId(expenseId, (nuevoGasto) => {
+      if (!nuevoGasto) {
+        Alert.alert('Gasto no encontrado');
+        navigation.goBack();
+        return;
+      }
+      setGasto(nuevoGasto);
+      setCargando(false);
+    });
+  
+    return () => unsubscribe();
   }, [expenseId]);
 
   /**
@@ -131,7 +141,11 @@ const ExpenseDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Fecha</Text>
           <Text style={styles.dateText}>
-            📅 {formatearFecha(new Date(gasto.fecha))}
+            📅 {formatearFecha(
+                  gasto.fecha instanceof Date
+                    ? gasto.fecha
+                    : new Date(gasto.fecha || Date.now())
+                )}
           </Text>
         </View>
 

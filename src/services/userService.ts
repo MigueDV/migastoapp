@@ -3,6 +3,8 @@ import { auth } from './firebase/config';
 import firestoreService from './firebase/firestoreService';
 import storageService from './firebase/storageService';
 import { User } from '../models/User';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from './firebase/config';
 
 const NOMBRE_COLECCION = 'usuarios';
 
@@ -32,6 +34,30 @@ class UserService {
       console.error('Error al obtener perfil de usuario:', error);
       throw new Error('Error al obtener perfil de usuario');
     }
+  }
+
+  escucharPerfilUsuario(
+    userId: string,
+    callback: (usuario: User | null) => void
+  ): () => void {
+    const ref = doc(db, NOMBRE_COLECCION, userId);
+    const unsubscribe = onSnapshot(ref, (snap) => {
+      if (!snap.exists()) {
+        callback(null);
+        return;
+      }
+      const data = snap.data();
+      const usuario: User = {
+        uid: data.uid,
+        email: data.email,
+        displayName: data.displayName || '',
+        photoURL: data.photoURL || undefined,
+        monthlyBudget: data.monthlyBudget ?? 0,
+        createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt),
+      };
+      callback(usuario);
+    });
+    return unsubscribe;
   }
 
   /*Actualizar perfil de usuario*/
@@ -106,6 +132,7 @@ class UserService {
       throw new Error('Error al actualizar presupuesto');
     }
   }
+  
 }
 
 export default new UserService();

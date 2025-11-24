@@ -27,29 +27,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // Observador de cambios en la autenticación
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        // Usuario autenticado: obtener o crear perfil
-        let userProfile = await userService.obtenerPerfilUsuario(firebaseUser.uid);
-
-         // Crear perfil si no existe
-        if (!userProfile) {
-          userProfile = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email!,
-            displayName: firebaseUser.displayName || '',
-            photoURL: firebaseUser.photoURL || undefined,
-            monthlyBudget: PRESUPUESTO_DEFAULT,
-            createdAt: new Date(),
-          };
-          await userService.crearPerfilUsuario(userProfile);
-        }
-
-        setUser(userProfile);
+        const unsubscribeProfile = userService.escucharPerfilUsuario(
+          firebaseUser.uid,
+          (userProfile) => {
+            if (userProfile) {
+              setUser(userProfile);
+            } else {
+              const newProfile: User = {
+                uid: firebaseUser.uid,
+                email: firebaseUser.email!,
+                displayName: firebaseUser.displayName || '',
+                photoURL: firebaseUser.photoURL || undefined,
+                monthlyBudget: PRESUPUESTO_DEFAULT,
+                createdAt: new Date(),
+              };
+              userService.crearPerfilUsuario(newProfile);
+            }
+            setLoading(false);
+          }
+        );
+    
+        // Limpia el listener del perfil cuando cambie de usuario
+        return () => unsubscribeProfile();
       } else {
         setUser(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return unsubscribe; // Cleanup: desuscribirse al desmontar
