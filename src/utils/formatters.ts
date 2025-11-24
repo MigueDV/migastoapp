@@ -19,7 +19,7 @@ export const formatearMoneda = (monto: number): string => {
  * @returns String con formato "15 dic 2024"
  */
 export const formatearFecha = (fecha: Date): string => {
-  if (!fecha || !(fecha instanceof Date)) {
+  if (!fecha || !(fecha instanceof Date) || isNaN(fecha.getTime())) {
     return '';
   }
 

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainTabParamList } from '../../navigation/types';
-import { ExpenseForm } from '../../components/expenses/ExpenseForm';
+import {ExpenseForm} from '../../components/expenses/ExpenseForm/ExpenseForm';
 import { useForm } from '../../viewmodels/hooks/useForm';
 import { validadores } from '../../utils/validators';
 import { useAuth } from '../../viewmodels/hooks/useAuth';

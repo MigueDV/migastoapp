@@ -19,8 +19,9 @@ export type MainTabParamList = {
   EditExpense: { expense: Expense };
 };
 
-export type ExpenseStackParamList = {
-  
-  
+export type ExpenseStackParamList = Pick<
+  MainTabParamList,
+  'ExpenseDetail' | 'EditExpense'
+> & {
+  ExpenseListMain: undefined;
 };
-

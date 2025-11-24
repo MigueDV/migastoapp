@@ -1,7 +1,8 @@
-import { where, orderBy, Timestamp } from 'firebase/firestore';
 import { Expense, CreateExpenseDTO, UpdateExpenseDTO } from '../models/Expense';
+import { doc, collection, query, where, orderBy, onSnapshot, Timestamp } from 'firebase/firestore';
 import firestoreService from './firebase/firestoreService';
 import storageService from './firebase/storageService';
+import { db } from './firebase/config';
 
 const NOMBRE_COLECCION = 'gastos';
 
@@ -41,10 +42,15 @@ class ExpenseService {
   /*Obtener gastos del usuario*/
   async obtenerGastosUsuario(userId: string): Promise<Expense[]> {
     try {
-      return await firestoreService.consultarDocumentos<Expense>(
+      const snaps = await firestoreService.consultarDocumentos<any>(
         NOMBRE_COLECCION,
         [where('userId', '==', userId), orderBy('fecha', 'desc')]
       );
+      // 🔥 Mapea cada doc
+      return snaps.map((doc) => ({
+        ...doc,
+        fecha: doc.fecha?.toDate ? doc.fecha.toDate() : new Date(doc.fecha),
+      })) as Expense[];
     } catch (error) {
       console.error('Error al obtener gastos:', error);
       throw new Error('Error al obtener los gastos');
@@ -54,10 +60,14 @@ class ExpenseService {
   /*Obtener gasto por ID*/
   async obtenerGastoPorId(idGasto: string): Promise<Expense | null> {
     try {
-      return await firestoreService.obtenerDocumento<Expense>(
-        NOMBRE_COLECCION,
-        idGasto
-      );
+      const docSnap = await firestoreService.obtenerDocumento<any>(NOMBRE_COLECCION, idGasto);
+      if (!docSnap) return null;
+  
+      // 🔥 Convierte Timestamp → Date
+      return {
+        ...docSnap,
+        fecha: docSnap.fecha?.toDate ? docSnap.fecha.toDate() : new Date(docSnap.fecha),
+      } as Expense;
     } catch (error) {
       console.error('Error al obtener gasto:', error);
       throw new Error('Error al obtener el gasto');
@@ -121,6 +131,51 @@ class ExpenseService {
     return gastos.reduce((total, gasto) => total + gasto.monto, 0);
   }
 
+  escucharGastosUsuario(
+    userId: string,
+    callback: (gastos: Expense[]) => void
+  ): () => void {
+    const q = query(
+      collection(db, NOMBRE_COLECCION),
+      where('userId', '==', userId),
+      orderBy('fecha', 'desc')
+    );
+  
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const docs = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          fecha: data.fecha?.toDate ? data.fecha.toDate() : new Date(data.fecha),
+        } as Expense;
+      });
+      callback(docs);
+    });
+  
+    return unsubscribe;
+  }
+
+  escucharGastoPorId(
+    idGasto: string,
+    callback: (gasto: Expense | null) => void
+  ): () => void {
+    const ref = doc(db, NOMBRE_COLECCION, idGasto);
+    const unsubscribe = onSnapshot(ref, (snap) => {
+      if (!snap.exists()) {
+        callback(null);
+        return;
+      }
+      const data = snap.data();
+      callback({
+        id: snap.id,
+        ...data,
+        fecha: data.fecha?.toDate ? data.fecha.toDate() : new Date(data.fecha),
+      } as Expense);
+    });
+    return unsubscribe;
+  }
+
   /*Agrupar gastos por categoría*/
   agruparPorCategoria(gastos: Expense[]): Record<string, Expense[]> {
     return gastos.reduce((acumulador, gasto) => {
@@ -151,5 +206,7 @@ class ExpenseService {
     });
   }
 }
+
+
 
 export default new ExpenseService();

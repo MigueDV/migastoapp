@@ -55,7 +55,7 @@ const EditExpenseScreen: React.FC<Props> = ({ navigation, route }) => {
         monto: expense.monto.toString(),
         categoria: expense.categoria,
         descripcion: expense.descripcion,
-        fecha: new Date(expense.fecha),
+        fecha: expense.fecha,
       },
       {
         monto: (value: string) =>
