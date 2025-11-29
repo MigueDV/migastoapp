@@ -11,7 +11,7 @@ import { MainTabParamList } from '../../navigation/types';
 import { FilterBar } from '../../components/expenses/FilterBar';
 import { ExpenseCard } from '../../components/expenses/ExpenseCard';
 import { useExpenses } from '../../viewmodels/hooks/useExpenses';
-import { formatearMoneda } from '../../utils/formatters';
+import { useCurrency } from '../../viewmodels/hooks/useCurrency';
 
 type ExpenseListScreenNavigationProp = NativeStackNavigationProp<
   MainTabParamList,
@@ -33,7 +33,7 @@ const ExpenseListScreen: React.FC<Props> = ({ navigation }) => {
     refrescarGastos,
     obtenerTotalGastos,
   } = useExpenses();
-
+  const { formatear } = useCurrency();
   const totalFiltrado = obtenerTotalGastos();
 
   /**
@@ -43,7 +43,10 @@ const ExpenseListScreen: React.FC<Props> = ({ navigation }) => {
     <ExpenseCard
       gasto={item}
       onPress={() =>
-        navigation.navigate('ExpenseDetail', { expenseId: item.id })
+        navigation.navigate('ExpenseList', {
+          screen: 'ExpenseDetail',
+          params: { expenseId: item.id },
+        })
       }
     />
   );
@@ -64,7 +67,7 @@ const ExpenseListScreen: React.FC<Props> = ({ navigation }) => {
       {gastosFiltrados.length > 0 && (
         <View style={styles.totalContainer}>
           <Text style={styles.totalLabel}>Total:</Text>
-          <Text style={styles.totalAmount}>{formatearMoneda(totalFiltrado)}</Text>
+          <Text style={styles.totalAmount}>{formatear(totalFiltrado)}</Text>
         </View>
       )}
     </>

@@ -3,8 +3,9 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Expense } from '../../../models/Expense';
 import { CATEGORIAS } from '../../../utils/constants';
-import { formatearMoneda, formatearFechaCorta } from '../../../utils/formatters';
+import { formatearFechaCorta } from '../../../utils/formatters';
 import { styles } from './ExpenseCard.styles';
+import { useCurrency } from '../../../viewmodels/hooks/useCurrency';
 
 interface ExpenseCardProps {
   gasto: Expense;
@@ -18,7 +19,7 @@ export const ExpenseCard: React.FC<ExpenseCardProps> = ({ gasto, onPress }) => {
   const obtenerCategoria = () => {
     return CATEGORIAS.find((cat) => cat.id === gasto.categoria);
   };
-
+  const { formatear } = useCurrency();
   const categoria = obtenerCategoria();
 
   return (
@@ -49,7 +50,7 @@ export const ExpenseCard: React.FC<ExpenseCardProps> = ({ gasto, onPress }) => {
 
       {/* Monto */}
       <View style={styles.rightSection}>
-        <Text style={styles.amount}>{formatearMoneda(gasto.monto)}</Text>
+        <Text style={styles.amount}>{formatear(gasto.monto)}</Text>
       </View>
     </TouchableOpacity>
   );

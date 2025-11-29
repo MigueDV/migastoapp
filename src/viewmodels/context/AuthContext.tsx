@@ -41,6 +41,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 displayName: firebaseUser.displayName || '',
                 photoURL: firebaseUser.photoURL || undefined,
                 monthlyBudget: PRESUPUESTO_DEFAULT,
+                currency: 'USD',
                 createdAt: new Date(),
               };
               userService.crearPerfilUsuario(newProfile);

@@ -65,6 +65,7 @@ import {
         displayName: usuarioFirebase.displayName || '',
         photoURL: usuarioFirebase.photoURL || undefined,
         monthlyBudget: 2000,
+        currency: 'USD',
         createdAt: new Date(usuarioFirebase.metadata.creationTime!),
       };
     }
