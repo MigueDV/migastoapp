@@ -12,6 +12,7 @@ import { CATEGORIAS } from '../../../utils/constants';
 import { ImagePickerComponent } from '../ImagePickerComponent/ImagePickerComponent';
 import { useImagePicker } from '../../../viewmodels/hooks/useImagePicker';
 import { styles } from './ExpenseForm.styles';
+import { useCurrency } from '../../../viewmodels/hooks/useCurrency';
 
 interface ExpenseFormProps {
   monto: string;
@@ -51,8 +52,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
   touched,
 }) => {
   const [mostrarDatePicker, setMostrarDatePicker] = React.useState(false);
-  const { imagen, cargando, seleccionarImagen, tomarFoto, quitarImagen, setImagen } =
-    useImagePicker();
+  const { imagen, cargando, seleccionarImagen, tomarFoto, quitarImagen, setImagen } = useImagePicker();
+  const { divisa, formatear } = useCurrency();
 
   // Inicializar imagen si hay una inicial
   React.useEffect(() => {
@@ -98,7 +99,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Monto *</Text>
         <View style={styles.montoInputContainer}>
-          <Text style={styles.montoSymbol}>$</Text>
+        <Text style={styles.montoSymbol}>
+          {divisa === 'PEN' ? 'S/.' : divisa === 'USD' ? '$' : divisa}
+        </Text>
           <TextInput
             style={[
               styles.montoInput,

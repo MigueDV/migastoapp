@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import { CATEGORIAS } from '../../../utils/constants';
-import { formatearMoneda } from '../../../utils/formatters';
 import { styles } from './CategoryChart.styles';
+import { useCurrency } from '../../../viewmodels/hooks/useCurrency';
 
 interface CategoryChartProps {
   totalesPorCategoria: Record<string, number>;
@@ -32,7 +32,7 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({
 
     return datos;
   };
-
+  const { formatear } = useCurrency();
   const datosGrafico = obtenerDatosGrafico();
   const totalGeneral = datosGrafico.reduce((sum, item) => sum + item.total, 0);
 
@@ -85,7 +85,7 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({
               </View>
               <View style={styles.categoryAmount}>
                 <Text style={styles.categoryValue}>
-                  {formatearMoneda(item.total)}
+                  {formatear(item.total)}
                 </Text>
                 <Text style={styles.categoryPercent}>{porcentaje}%</Text>
               </View>

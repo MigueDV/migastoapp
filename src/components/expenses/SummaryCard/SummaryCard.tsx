@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { styles } from './SummaryCard.styles';
-import { formatearMoneda } from '../../../utils/formatters';
 import { useAuth } from '../../../viewmodels/hooks/useAuth';
+import { useCurrency } from '../../../viewmodels/hooks/useCurrency';
 
 interface SummaryCardProps {
   totalMes: number;
@@ -16,6 +16,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
   cantidadGastos,
 }) => {
   const { user } = useAuth();
+  const { formatear } = useCurrency();
   const presupuesto = user?.monthlyBudget || 0;
   const restante = presupuesto - totalMes;
   const porcentajeGastado = presupuesto > 0 ? (totalMes / presupuesto) * 100 : 0;
@@ -34,7 +35,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
       {/* Total del Mes */}
       <View style={styles.mainAmount}>
         <Text style={styles.label}>Total del Mes</Text>
-        <Text style={styles.amount}>{formatearMoneda(totalMes)}</Text>
+        <Text style={styles.amount}>{formatear(totalMes)}</Text>
       </View>
 
       {/* Barra de Progreso */}
@@ -61,7 +62,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
       <View style={styles.infoRow}>
         <View style={styles.infoItem}>
           <Text style={styles.infoLabel}>Presupuesto</Text>
-          <Text style={styles.infoValue}>{formatearMoneda(presupuesto)}</Text>
+          <Text style={styles.infoValue}>{formatear(presupuesto)}</Text>
         </View>
 
         <View style={styles.infoItem}>
@@ -72,7 +73,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
               { color: restante >= 0 ? '#34C759' : '#FF3B30' },
             ]}
           >
-            {formatearMoneda(restante)}
+            {formatear(restante)}
           </Text>
         </View>
       </View>
@@ -83,7 +84,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
           <Text style={styles.statLabel}>Hoy</Text>
-          <Text style={styles.statValue}>{formatearMoneda(totalHoy)}</Text>
+          <Text style={styles.statValue}>{formatear(totalHoy)}</Text>
         </View>
 
         <View style={styles.statDivider} />

@@ -57,7 +57,11 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.sectionTitle}>Gastos Recientes</Text>
           <Text
             style={styles.seeAll}
-            onPress={() => navigation.navigate('ExpenseList')}
+            onPress={() =>
+              navigation.navigate('ExpenseList', {
+                screen: 'ExpenseListMain',
+              })
+            }
           >
             Ver todos
           </Text>
@@ -69,7 +73,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
               key={gasto.id}
               gasto={gasto}
               onPress={() =>
-                navigation.navigate('ExpenseDetail', { expenseId: gasto.id })
+                navigation.navigate('ExpenseList', {
+                  screen: 'ExpenseDetail',
+                  params: { expenseId: gasto.id },
+                })
               }
             />
           ))

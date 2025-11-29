@@ -4,5 +4,6 @@ export interface User {
     displayName: string;
     photoURL?: string;
     monthlyBudget: number;
+    currency: string;
     createdAt: Date;
 }

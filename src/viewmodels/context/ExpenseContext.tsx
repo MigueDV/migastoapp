@@ -64,7 +64,7 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
 
   useEffect(() => {
     aplicarFiltros();
-  }, [gastos, categoriaSeleccionada, filtroFechaSeleccionado]);
+  }, [gastos, categoriaSeleccionada, filtroFechaSeleccionado, user?.currency]);
 
   /**
    * Cargar gastos del usuario

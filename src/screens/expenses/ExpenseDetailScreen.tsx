@@ -13,8 +13,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { ExpenseStackParamList } from '../../navigation/types';
 import { CATEGORIAS } from '../../utils/constants';
-import { formatearMoneda, formatearFecha } from '../../utils/formatters';
+import { formatearFecha } from '../../utils/formatters';
 import expenseService from '../../services/expenseService';
+import { useCurrency } from '../../viewmodels/hooks/useCurrency';
 
 type ExpenseDetailScreenNavigationProp = NativeStackNavigationProp<
   ExpenseStackParamList,
@@ -33,6 +34,7 @@ interface Props {
 
 const ExpenseDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { expenseId } = route.params;
+  const { formatear } = useCurrency();
   const [cargando, setCargando] = useState(false);
   const [gasto, setGasto] = useState<any>(null);
 
@@ -129,7 +131,7 @@ const ExpenseDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         </View>
 
         {/* Monto */}
-        <Text style={styles.amount}>{formatearMoneda(gasto.monto)}</Text>
+        <Text style={styles.amount}>{formatear(gasto.monto)}</Text>
 
         {/* Descripción */}
         <View style={styles.section}>

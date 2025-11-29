@@ -18,6 +18,7 @@ import { validadores } from '../../utils/validators';
 import { useAuth } from '../../viewmodels/hooks/useAuth';
 import expenseService from '../../services/expenseService';
 import { UpdateExpenseDTO } from '../../models/Expense';
+import { useCurrency } from '../../viewmodels/hooks/useCurrency';
 
 type EditExpenseScreenNavigationProp = NativeStackNavigationProp<
   ExpenseStackParamList,
@@ -44,6 +45,7 @@ interface ExpenseFormValues {
 const EditExpenseScreen: React.FC<Props> = ({ navigation, route }) => {
   const { expense } = route.params;
   const { user } = useAuth();
+  const { convertir } = useCurrency();
   const [cargando, setCargando] = useState(false);
   const [imagenRecibo, setImagenRecibo] = useState<string | null>(
     expense.imagenUrl || null
@@ -52,7 +54,7 @@ const EditExpenseScreen: React.FC<Props> = ({ navigation, route }) => {
   const { values, errors, touched, handleChange, validate } =
     useForm<ExpenseFormValues>(
       {
-        monto: expense.monto.toString(),
+        monto: convertir(expense.monto, 'USD').toString(),
         categoria: expense.categoria,
         descripcion: expense.descripcion,
         fecha: expense.fecha,

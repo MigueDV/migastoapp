@@ -1,3 +1,4 @@
+import { NavigatorScreenParams } from '@react-navigation/native';
 import { Expense } from '../models/Expense';
 
 export type RootStackParamList = {
@@ -10,18 +11,15 @@ export type AuthStackParamList = {
   Register: undefined;
 };
 
-export type MainTabParamList = {
-  Home: undefined;
-  AddExpense: undefined;
-  ExpenseList: undefined;
-  Profile: undefined;  
+export type ExpenseStackParamList = {
+  ExpenseListMain: undefined;
   ExpenseDetail: { expenseId: string };
   EditExpense: { expense: Expense };
 };
 
-export type ExpenseStackParamList = Pick<
-  MainTabParamList,
-  'ExpenseDetail' | 'EditExpense'
-> & {
-  ExpenseListMain: undefined;
+export type MainTabParamList = {
+  Home: undefined;
+  AddExpense: undefined;
+  ExpenseList: NavigatorScreenParams<ExpenseStackParamList>;
+  Profile: undefined;
 };

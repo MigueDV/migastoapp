@@ -16,8 +16,8 @@ import { useImagePicker } from '../../viewmodels/hooks/useImagePicker';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Input } from '../../components/common/Input';
-import { formatearMoneda } from '../../utils/formatters';
 import userService from '../../services/userService';
+import { useCurrency } from '../../viewmodels/hooks/useCurrency';
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<
   MainTabParamList,
@@ -30,9 +30,20 @@ interface Props {
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const { user, logout } = useAuth();
+  const divisas = ['USD', 'EUR', 'MXN', 'COP', 'ARS', 'PEN'];
+  const [nuevaDivisa, setNuevaDivisa] = useState(user?.currency || 'USD');
+  const handleGuardarDivisa = async () => {
+    if (!user) return;
+    try {
+      await userService.actualizarPerfilUsuario(user.uid, { currency: nuevaDivisa });
+      Alert.alert('Éxito', 'Divisa actualizada');
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
+    }
+  };
   const { gastos, obtenerGastosMes } = useExpenses();
   const { imagen, seleccionarImagen, tomarFoto, setImagen } = useImagePicker();
-
+  const { formatear } = useCurrency();
   const [editandoNombre, setEditandoNombre] = useState(false);
   const [nuevoNombre, setNuevoNombre] = useState(user?.displayName || '');
   const [editandoPresupuesto, setEditandoPresupuesto] = useState(false);
@@ -263,7 +274,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.infoContent}>
               <Text style={styles.infoLabel}>Límite Mensual</Text>
               <Text style={styles.infoValue}>
-                {formatearMoneda(user?.monthlyBudget || 0)}
+                {formatear(user?.monthlyBudget || 0)}
               </Text>
             </View>
             <TouchableOpacity onPress={() => setEditandoPresupuesto(true)}>
@@ -271,6 +282,40 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         )}
+      </Card>
+
+      {/* Divisa Preferida */}
+      <Card variant="elevated" style={styles.section}>
+        <Text style={styles.sectionTitle}>Divisa Preferida</Text>
+
+        <View style={styles.divisaContainer}>
+          {divisas.map((d) => (
+            <TouchableOpacity
+              key={d}
+              style={[
+                styles.divisaButton,
+                nuevaDivisa === d && styles.divisaButtonActive,
+              ]}
+              onPress={() => setNuevaDivisa(d)}
+            >
+              <Text
+                style={[
+                  styles.divisaText,
+                  nuevaDivisa === d && styles.divisaTextActive,
+                ]}
+              >
+                {d}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Button
+          title="Guardar Divisa"
+          onPress={handleGuardarDivisa}
+          size="small"
+          style={styles.guardarDivisaButton}
+        />
       </Card>
 
       {/* Estadísticas */}
@@ -285,19 +330,19 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
           <View style={styles.statItem}>
             <Text style={styles.statValue}>
-              {formatearMoneda(totalHistorico)}
+              {formatear(totalHistorico)}
             </Text>
             <Text style={styles.statLabel}>Histórico</Text>
           </View>
 
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{formatearMoneda(totalMes)}</Text>
+            <Text style={styles.statValue}>{formatear(totalMes)}</Text>
             <Text style={styles.statLabel}>Este Mes</Text>
           </View>
 
           <View style={styles.statItem}>
             <Text style={styles.statValue}>
-              {formatearMoneda(promedioMensual)}
+              {formatear(promedioMensual)}
             </Text>
             <Text style={styles.statLabel}>Promedio</Text>
           </View>
@@ -461,6 +506,36 @@ const styles = StyleSheet.create({
     color: '#999',
     marginBottom: 4,
   },
+
+  divisaContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 12,
+  },
+  divisaButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+  },
+  divisaButtonActive: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  divisaText: {
+    color: '#333',
+    fontWeight: '600',
+  },
+  divisaTextActive: {
+    color: '#FFFFFF',
+  },
+  guardarDivisaButton: {
+    marginTop: 8,
+  },
+
 });
 
 export default ProfileScreen;

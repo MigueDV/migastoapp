@@ -52,6 +52,7 @@ class UserService {
         email: data.email,
         displayName: data.displayName || '',
         photoURL: data.photoURL || undefined,
+        currency: data.currency || 'USD',
         monthlyBudget: data.monthlyBudget ?? 0,
         createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt),
       };
