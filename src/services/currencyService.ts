@@ -15,7 +15,8 @@ const TASAS_DE_CAMBIO: Record<string, number> = {
     if (de === a) return monto;
     const tasaDe = TASAS_DE_CAMBIO[de] || 1;
     const tasaA = TASAS_DE_CAMBIO[a] || 1;
-    return (monto / tasaDe) * tasaA;
+    const montoEnUSD = monto / tasaDe;
+    return montoEnUSD * tasaA;
   };
   
   export const formatearMonedaConDivisa = (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -41,16 +41,34 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       Alert.alert('Error', error.message);
     }
   };
+  const handleCancelarPresupuesto = () => {
+    setEditandoPresupuesto(false);
+    setNuevoPresupuesto('');
+  };
   const { gastos, obtenerGastosMes } = useExpenses();
   const { imagen, seleccionarImagen, tomarFoto, setImagen } = useImagePicker();
-  const { formatear } = useCurrency();
+  const { divisa, convertir,  formatear } = useCurrency();
   const [editandoNombre, setEditandoNombre] = useState(false);
   const [nuevoNombre, setNuevoNombre] = useState(user?.displayName || '');
   const [editandoPresupuesto, setEditandoPresupuesto] = useState(false);
   const [nuevoPresupuesto, setNuevoPresupuesto] = useState(
-    user?.monthlyBudget?.toString() || '2000'
+    user?.monthlyBudget ? convertir(user.monthlyBudget, 'USD').toFixed(2) : '2000.00'
   );
   const [cargando, setCargando] = useState(false);
+
+  useEffect(() => {
+    if (user?.monthlyBudget) {
+      const convertido = convertir(user.monthlyBudget, 'USD');
+      setNuevoPresupuesto(convertido.toFixed(2));
+    }
+  }, [user?.monthlyBudget, divisa]);
+
+  useEffect(() => {
+    if (editandoPresupuesto && user?.monthlyBudget) {
+      const convertido = convertir(user.monthlyBudget, 'USD');
+      setNuevoPresupuesto(convertido.toFixed(2));
+    }
+  }, [editandoPresupuesto, user?.monthlyBudget, divisa]);
 
   React.useEffect(() => {
     if (user?.photoURL) {
@@ -111,17 +129,19 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
    * Guardar presupuesto
    */
   const handleGuardarPresupuesto = async () => {
-    const presupuesto = parseFloat(nuevoPresupuesto);
-    if (isNaN(presupuesto) || presupuesto <= 0) {
+    const presupuestoEnDivisaActual = parseFloat(nuevoPresupuesto);
+    if (isNaN(presupuestoEnDivisaActual) || presupuestoEnDivisaActual <= 0) {
       Alert.alert('Error', 'Ingresa un presupuesto válido');
       return;
     }
-
+  
     if (!user) return;
-
+  
     try {
       setCargando(true);
-      await userService.actualizarPresupuestoMensual(user.uid, presupuesto);
+      const presupuestoEnUSD = convertir(presupuestoEnDivisaActual, divisa, 'USD');
+  
+      await userService.actualizarPresupuestoMensual(user.uid, presupuestoEnUSD);
       setEditandoPresupuesto(false);
       Alert.alert('Éxito', 'Presupuesto actualizado');
     } catch (error: any) {
@@ -255,10 +275,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
               <Button
                 title="Cancelar"
                 variant="outline"
-                onPress={() => {
-                  setNuevoPresupuesto(user?.monthlyBudget?.toString() || '2000');
-                  setEditandoPresupuesto(false);
-                }}
+                onPress={handleCancelarPresupuesto}
                 style={styles.halfButton}
               />
               <Button

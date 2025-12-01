@@ -12,6 +12,7 @@ interface CategoryChartProps {
 export const CategoryChart: React.FC<CategoryChartProps> = ({
   totalesPorCategoria,
 }) => {
+  const { formatear } = useCurrency();
   /**
    * Preparar datos para el gráfico
    */
@@ -32,7 +33,6 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({
 
     return datos;
   };
-  const { formatear } = useCurrency();
   const datosGrafico = obtenerDatosGrafico();
   const totalGeneral = datosGrafico.reduce((sum, item) => sum + item.total, 0);
 
@@ -69,6 +69,7 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({
         backgroundColor="transparent"
         paddingLeft="0"
         absolute
+        hasLegend={false}
       />
 
       {/* Lista de Categorías */}
