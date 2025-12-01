@@ -45,7 +45,7 @@ interface ExpenseFormValues {
 const EditExpenseScreen: React.FC<Props> = ({ navigation, route }) => {
   const { expense } = route.params;
   const { user } = useAuth();
-  const { convertir } = useCurrency();
+  const { convertir, divisa } = useCurrency();
   const [cargando, setCargando] = useState(false);
   const [imagenRecibo, setImagenRecibo] = useState<string | null>(
     expense.imagenUrl || null
@@ -84,8 +84,10 @@ const EditExpenseScreen: React.FC<Props> = ({ navigation, route }) => {
     try {
       setCargando(true);
 
+      const montoEnUSD = convertir(parseFloat(values.monto), divisa, 'USD');
+
       const datosActualizar: UpdateExpenseDTO = {
-        monto: parseFloat(values.monto),
+        monto: montoEnUSD,
         categoria: values.categoria,
         descripcion: values.descripcion.trim(),
         fecha: values.fecha,

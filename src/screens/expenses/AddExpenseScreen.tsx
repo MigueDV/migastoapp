@@ -17,6 +17,7 @@ import { validadores } from '../../utils/validators';
 import { useAuth } from '../../viewmodels/hooks/useAuth';
 import expenseService from '../../services/expenseService';
 import { CreateExpenseDTO } from '../../models/Expense';
+import { useCurrency } from '../../viewmodels/hooks/useCurrency';
 
 type AddExpenseScreenNavigationProp = NativeStackNavigationProp<
   MainTabParamList,
@@ -37,6 +38,7 @@ interface ExpenseFormValues {
 const AddExpenseScreen: React.FC<Props> = ({ navigation }) => {
   const { user } = useAuth();
   const [cargando, setCargando] = useState(false);
+  const { convertir, divisa } = useCurrency();
   const [imagenRecibo, setImagenRecibo] = useState<string | null>(null);
 
   const { values, errors, touched, handleChange, handleBlur, validate, reset } =
@@ -63,25 +65,26 @@ const AddExpenseScreen: React.FC<Props> = ({ navigation }) => {
       Alert.alert('Error', 'Por favor completa todos los campos requeridos');
       return;
     }
-
+  
     if (!user) {
       Alert.alert('Error', 'No hay usuario autenticado');
       return;
     }
-
+  
     try {
       setCargando(true);
-
+      const montoEnUSD = convertir(parseFloat(values.monto), divisa, 'USD');
+  
       const nuevoGasto: CreateExpenseDTO = {
-        monto: parseFloat(values.monto),
+        monto: montoEnUSD,
         categoria: values.categoria,
         descripcion: values.descripcion.trim(),
         fecha: values.fecha,
         imagenRecibo: imagenRecibo || undefined,
       };
-
+  
       await expenseService.crearGasto(user.uid, nuevoGasto);
-
+  
       Alert.alert('¡Éxito!', 'Gasto registrado correctamente', [
         {
           text: 'OK',
